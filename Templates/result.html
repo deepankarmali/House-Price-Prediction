@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Result</title>
+    <style>
+        .result-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        h1 {
+            text-align: center;
+            text-shadow: 2px 2px 5px black;
+            text-decoration: underline;
+            text-decoration-color: rgb(25, 123, 252);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        input {
+            padding: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        input[type="button"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background-color: #0056b3;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('/static/Houses.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="color: #ffffff;">Predicted Price</h1>
+    <div class="result-container">
+        <label for="prediction">Predicted Price:</label>
+        <b><p id="prediction" style="font-size: 2em; color: #0026ff;">{{ prediction }}</p></b>
+
+        <label for="interestRate">Interest Rate:</label>
+        <input type="text" id="interestRate" placeholder="Enter interest rate (e.g., 5.5)" required pattern="\d+(\.\d+)?" title="Enter a valid decimal number">
+
+        <label for="loanTenure">Loan Tenure (years):</label>
+        <input type="text" id="loanTenure" placeholder="Enter loan tenure" required pattern="\d+" title="Enter a valid whole number">
+
+        <div class="emi-container">
+            <input type="button" value="Recalculate EMI" onclick="recalculateEMI()">
+            
+            <label for="loanAmount">Loan Amount (80% of Predicted Price):</label>
+            <p id="loanAmount">{{ prediction * 0.8 }}</p>
+
+            <label for="emi">EMI (Equated Monthly Installment):</label>
+            <p id="emi"></p>
+        </div>
+    </div>
+
+    <script>
+        function recalculateEMI() {
+            const prediction = parseFloat(document.getElementById('prediction').textContent);
+            const interestRate = parseFloat(document.getElementById('interestRate').value);
+            const loanTenure = parseInt(document.getElementById('loanTenure').value, 10);
+            
+            if (isNaN(interestRate) || isNaN(loanTenure) || interestRate <= 0 || loanTenure <= 0) {
+                alert('Please enter valid values for interest rate and loan tenure.');
+                return;
+            }
+
+            const loanAmount = prediction * 0.8;
+            const monthlyInterestRate = interestRate / 12 / 100;
+            const numberOfPayments = loanTenure * 12;
+            const emi = (loanAmount * monthlyInterestRate) / (1 - Math.pow(1 + monthlyInterestRate, -numberOfPayments));
+            document.getElementById('loanAmount').textContent = loanAmount.toFixed(2);
+            document.getElementById('emi').textContent = emi.toFixed(2);
+        }
+    </script>
+</body>
+</html>
